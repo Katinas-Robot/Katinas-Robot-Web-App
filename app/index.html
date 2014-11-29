@@ -14,109 +14,127 @@
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
+
+
+    <!-- build:js(.) scripts/oldieshim.js -->
+    <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
+    <![endif]-->
+    <!-- endbuild -->
+
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/affix.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/alert.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/button.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/carousel.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/collapse.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/dropdown.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tab.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/transition.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/scrollspy.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/modal.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tooltip.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/angular-touch/angular-touch.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/main.js"></script>
+    <!-- endbuild -->
   </head>
   <body ng-app="katinasRobotWebApp">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-  <!-- Add your site or application content here -->
-  <div class="container" ng-controller="MainCtrl">
-    <div class="header">
-      <h3 class="text-muted">KATINAS <small>ROBOT</small>
 
-        <span class="label label-danger" ng-show="!robotData.isOnline">Offline</span>
-        <span class="label label-success" ng-show="robotData.isOnline">Online</span>
-      </h3>
-    </div>
+    <div class="container" ng-controller="MainCtrl">
+      <div class="header">
+        <h3 class="text-muted">KATINAS
+          <small>
+            ROBOT
+            <span class="text-danger" ng-show="!robotData.isConnected">is offline</span>
+            <span class="text-success" ng-show="robotData.isConnected">is online <i class="glyphicon glyphicon-flash"></i></span>
+          </small>
 
-    <div ng-show="!robotData.isConnected">
-      <div class="input-group" ng-show="!isConnecting">
-        <input type="text" name="robotIpAdress" class="form-control input-lg" ng-model="robotData.ipAddress" placeholder="Enter robot IP address..." />
+          <!--<span class="label label-danger">Offline</span>-->
+          <!--<span class="label label-success" ng-show="robotData.isOnline">Online</span>-->
+        </h3>
+      </div>
+
+      <div ng-show="!robotData.isConnected">
+        <div class="alert alert-danger text-center" ng-show="!robotData.isConnecting && robotData.isConnectionFailed">
+          Connection failed. Please check IP address...
+        </div>
+
+        <div class="input-group" ng-show="!robotData.isConnecting">
+          <input type="text" name="robotIpAdress" class="form-control input-lg" ng-model="robotData.ipAddress" placeholder="Enter robot IP address..." />
         <span class="input-group-btn">
           <button class="btn btn-primary btn-lg" type="button" ng-click="connect()">Connect</button>
         </span>
+        </div>
+
+        <div class="text-center" ng-show="robotData.isConnecting">
+          <img src="http://cdn.nirmaltv.com/images/generatorphp-thumb.gif" />
+          <h3 class="text-center">connecting...</h3>
+        </div>
       </div>
 
-      <h3 ng-show="isConnecting">Trying to connect...</h3>
-    </div>
-
-    <div class="panel panel-default" ng-show="robotData.isConnected">
-      <div class="panel-heading">
-        <img src="" />
-      </div>
-
-      <div class="panel-body">
-        <div class="text-center" style="margin-bottom: 5px;">
-          <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'forward', 'btn-primary': robotData.lastDirection == 'forward'}"  type="button"><i class="glyphicon glyphicon-arrow-up"></i></button>
+      <div class="panel panel-default" ng-if="robotData.isConnected">
+        <div class="panel-heading text-center" ng-if="robotData.isRecording">
+          <img class="gadgeteer-camera-image" ng-src="{{ robotData.cameraImage }}" />
         </div>
 
-        <div class="text-center" style="margin-bottom: 5px;">
-          <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'left', 'btn-primary': robotData.lastDirection == 'left'}" type="button"><i class="glyphicon glyphicon-arrow-left"></i></button>
-          <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'backward', 'btn-primary': robotData.lastDirection == 'backward'}"  type="button"><i class="glyphicon glyphicon-arrow-down"></i></button>
-          <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'right', 'btn-primary': robotData.lastDirection == 'right'}"  type="button"><i class="glyphicon glyphicon-arrow-right"></i></button>
-        </div>
+        <div class="panel-body">
+          <div class="text-center" style="margin-bottom: 5px;">
+            <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'forward', 'btn-primary': robotData.lastDirection == 'forward'}" ng-click="move(1)" type="button"><i class="glyphicon glyphicon-arrow-up"></i></button>
+          </div>
 
-        <div class="text-center">
-          <button class="btn btn-danger btn-lg" type="button"><i class="glyphicon glyphicon-stop"></i> STOP</button>
-        </div>
+          <div class="text-center" style="margin-bottom: 5px;">
+            <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'left', 'btn-primary': robotData.lastDirection == 'left'}" ng-click="move(3)" type="button"><i class="glyphicon glyphicon-arrow-left"></i></button>
+            <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'backward', 'btn-primary': robotData.lastDirection == 'backward'}" ng-click="move(2)"  type="button"><i class="glyphicon glyphicon-arrow-down"></i></button>
+            <button class="btn btn-lg" ng-class="{'btn-default': robotData.lastDirection != 'right', 'btn-primary': robotData.lastDirection == 'right'}"  ng-click="move(4)" type="button"><i class="glyphicon glyphicon-arrow-right"></i></button>
+          </div>
 
-        <hr />
+          <div class="text-center" style="margin-bottom: 15px;">
+            <button class="btn btn-danger btn-lg" ng-click="move(0)" type="button">STOP MOVING</button>
+          </div>
 
-        <div class="input-group">
-          <input type="text" name="message" class="form-control" placeholder="Send some message" />
+          <hr />
+          <div class="text-center">
+            <button class="btn btn-success btn-lg" ng-show="!robotData.isRecording" ng-click="startCamera()" ng-disabled="robotData.isStartingCamera" type="button"><i class="glyphicon glyphicon-record"></i> Start camera</button>
+            <button class="btn btn-danger btn-lg" ng-show="robotData.isRecording" ng-click="stopCamera()" ng-disabled="robotData.isStoppingCamera" type="button"><i class="glyphicon glyphicon-stop"></i> Stop camera</button>
+          </div>
+
+          <hr />
+
+          <div class="input-group">
+            <input type="text" name="message" class="form-control input-lg" ng-model="robotData.messageToSend" placeholder="Send the message" />
           <span class="input-group-btn">
-            <button class="btn btn-default" type="button">Send</button>
+            <button class="btn btn-default btn-lg" type="button" ng-click="sendMessage(robotData.messageToSend)">Send</button>
           </span>
+          </div>
         </div>
       </div>
+
+      <div class="footer">
+        <p class="text-center">
+          <a href="https://github.com/dzonatan/Katinas-Robot" target="_blank">Katinas-Robot</a> |
+          <a href="https://github.com/dzonatan/Katinas-Robot-Web-App" target="_blank">Katinas-Robot-Web-App</a>
+        </p>
+      </div>
     </div>
-
-    <div class="footer">
-      <p class="text-center">
-        <a href="https://github.com/dzonatan/Katinas-Robot" target="_blank">Katinas-Robot</a> |
-        <a href="https://github.com/dzonatan/Katinas-Robot-Web-App" target="_blank">Katinas-Robot-Web-App</a>
-      </p>
-    </div>
-  </div>
-
-
-  <!-- build:js(.) scripts/oldieshim.js -->
-  <!--[if lt IE 9]>
-    <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.js"></script>
-  <![endif]-->
-  <!-- endbuild -->
-
-  <!-- build:js(.) scripts/vendor.js -->
-  <!-- bower:js -->
-  <script src="bower_components/jquery/dist/jquery.js"></script>
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/affix.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/alert.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/button.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/carousel.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/collapse.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/dropdown.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tab.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/transition.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/scrollspy.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/modal.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tooltip.js"></script>
-  <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js"></script>
-  <script src="bower_components/angular-animate/angular-animate.js"></script>
-  <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-  <script src="bower_components/angular-messages/angular-messages.js"></script>
-  <script src="bower_components/angular-resource/angular-resource.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-  <script src="bower_components/angular-touch/angular-touch.js"></script>
-  <!-- endbower -->
-  <!-- endbuild -->
-
-  <!-- build:js({.tmp,app}) scripts/scripts.js -->
-    <script src="scripts/app.js"></script>
-    <script src="scripts/controllers/main.js"></script>
-  <!-- endbuild -->
-</body>
+  </body>
 </html>

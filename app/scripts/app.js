@@ -18,14 +18,17 @@ angular
     'ngSanitize',
     'ngTouch'
   ])
-  .config(function () {
-
-  })
-  .factory('RobotFactory', function($resource, $http) {
+  .config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
+  }])
+  .factory('RobotFactory', ['$resource', '$http', function($resource, $http) {
     $http.defaults.useXDomain = true;
 
     return $resource('http://:ipAddress/:action', { action: '@action' }, {
       connect : { method: 'GET', params: { action: 'Authenticate' } },
-      move : { method: 'GET', params: { action: 'Move' } }
+      move : { method: 'GET', params: { action: 'Move' } },
+      startCapturing : { method: 'GET', params: { action: 'StartCapturing' } },
+      stopCapturing : { method: 'GET', params: { action: 'StopCapturing' } },
+      sendMessage : { method: 'GET', params: { action: 'DisplayMessage' } }
     });
-  });
+  }]);
