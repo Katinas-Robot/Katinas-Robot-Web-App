@@ -20,4 +20,12 @@ angular
   ])
   .config(function () {
 
+  })
+  .factory('RobotFactory', function($resource, $http) {
+    $http.defaults.useXDomain = true;
+
+    return $resource('http://:ipAddress/:action', { action: '@action' }, {
+      connect : { method: 'GET', params: { action: 'Authenticate' } },
+      move : { method: 'GET', params: { action: 'Move' } }
+    });
   });
