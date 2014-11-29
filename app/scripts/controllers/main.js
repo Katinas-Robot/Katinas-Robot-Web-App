@@ -31,10 +31,6 @@ angular.module('katinasRobotWebApp')
     };
 
     $scope.move = function (direction) {
-      if ($scope.robotData.lastDirection === direction){
-        return;
-      }
-
       RobotFactory.move({ ipAddress: $scope.robotData.ipAddress, direction: direction }, function () {
         $scope.robotData.lastDirection = direction;
       });
